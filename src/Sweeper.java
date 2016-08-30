@@ -69,7 +69,7 @@ public class Sweeper extends JFrame {
     }
 
     public void markMine(int i, int j) {
-        sweepButton[i][j].setForeground(Color.RED);
+        sweepButton[i][j].setBackground(Color.RED);
         sweepButton[i][j].setText("X");
         sweepButton[i][j].setEnabled(false);
     }
