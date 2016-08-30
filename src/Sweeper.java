@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Sweeper extends JFrame {
     private Container container;
@@ -8,6 +10,7 @@ public class Sweeper extends JFrame {
     private int timeLength = 0;
     private int minesCount = 10;
     private JButton[][] sweepButton;
+    int[][] sweepButtonValues = new int[row + 2][col + 2];
 
     public Sweeper() {
         container = getContentPane();
@@ -20,6 +23,8 @@ public class Sweeper extends JFrame {
         buildTopPanel();
         buildGamePanel();
         setMines(minesCount);
+        setButtonValue();
+        addListener();
         buildMainFrame();
     }
 
@@ -29,6 +34,76 @@ public class Sweeper extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
+    }
+
+    //计算周围地雷数
+    public void setButtonValue() {
+        for (int i = 1; i <= row; i++) {
+            for (int j = 1; j <= col; j++) {
+                if (sweepButtonValues[i][j] != 10) {
+                    for (int x = j - 1; x <= j + 1; x++) {
+                        if (sweepButtonValues[i - 1][x] == 10) {
+                            sweepButtonValues[i][j]++;
+                        }
+                        if (sweepButtonValues[i + 1][x] == 10) {
+                            sweepButtonValues[i][j]++;
+                        }
+                    }
+                    if (sweepButtonValues[i][j - 1] == 10) {
+                        sweepButtonValues[i][j]++;
+                    }
+                    if (sweepButtonValues[i][j + 1] == 10) {
+                        sweepButtonValues[i][j]++;
+                    }
+                    //显示数字
+                    sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
+                }
+            }
+        }
+    }
+
+    //显示雷或者数字
+    public void markNumber(int i, int j) {
+        sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
+        sweepButton[i][j].setEnabled(false);
+    }
+
+    public void markMine(int i, int j) {
+        sweepButton[i][j].setForeground(Color.RED);
+        sweepButton[i][j].setText("X");
+        sweepButton[i][j].setEnabled(false);
+    }
+
+    public void markZero(int i, int j) {
+        sweepButton[i][j].setText("");
+        sweepButton[i][j].setEnabled(false);
+    }
+
+    public void addListener() {
+        for (int i = 1; i <= row; i++) {
+            for (int j = 1; j <= col; j++) {
+                sweepButton[i][j].addActionListener(new ButtonActionListener());
+            }
+        }
+    }
+
+    private class ButtonActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for (int i = 1; i <= row; i++) {
+                for (int j = 0; j <= col; j++) {
+                    if (e.getSource() == sweepButton[i][j]) {
+                        if (sweepButtonValues[i][j] == 0) {
+                            markZero(i, j);
+                        } else if (sweepButtonValues[i][j] == 10) {
+                            markMine(i, j);
+                        } else {
+                            markNumber(i, j);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void setMines(int minesCount) {
@@ -45,6 +120,7 @@ public class Sweeper extends JFrame {
             randomValues[i] = randomNumber;
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
+            sweepButtonValues[x][y] = 10;
             sweepButton[x][y].setText("Q");
 
         }
@@ -120,4 +196,5 @@ public class Sweeper extends JFrame {
     public static void main(String[] args) {
         new Sweeper();
     }
+
 }
