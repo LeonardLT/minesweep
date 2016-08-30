@@ -3,15 +3,19 @@ import java.awt.*;
 
 public class Sweeper extends JFrame {
     private Container container;
+    private int row = 9;
+    private int col = 9;
 
     public Sweeper() {
         container = getContentPane();
         container.setLayout(new BorderLayout());
+
         initGame();
     }
 
     public void initGame() {
         buildMenuPanel();
+        buildGamePanel();
         buildMainFrame();
 
 
@@ -53,6 +57,19 @@ public class Sweeper extends JFrame {
         menuPanel.add(menuBar);
 
         container.add(menuPanel, BorderLayout.NORTH);
+    }
+
+    public void buildGamePanel() {
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(new GridLayout(row, col, 0, 0));
+        JButton[][] sweepButton = new JButton[row + 2][col + 2];
+        for (int i = 1; i <= row; i++) {
+            for (int j = 1; j <= col; j++) {
+                sweepButton[i][j] = new JButton();
+                gamePanel.add(sweepButton[i][j]);
+            }
+        }
+        container.add(gamePanel);
     }
 
     public static void main(String[] args) {
