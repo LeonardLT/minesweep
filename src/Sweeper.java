@@ -5,6 +5,8 @@ public class Sweeper extends JFrame {
     private Container container;
     private int row = 9;
     private int col = 9;
+    private int timeLength = 0;
+    private int minesCount = 10;
 
     public Sweeper() {
         container = getContentPane();
@@ -14,11 +16,9 @@ public class Sweeper extends JFrame {
     }
 
     public void initGame() {
-        buildMenuPanel();
+        buildTopPanel();
         buildGamePanel();
         buildMainFrame();
-
-
     }
 
     public void buildMainFrame() {
@@ -29,7 +29,15 @@ public class Sweeper extends JFrame {
         setResizable(false);
     }
 
-    public void buildMenuPanel() {
+    public void buildTopPanel() {
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(menuPanel(), BorderLayout.NORTH);
+        topPanel.add(messagePanel(), BorderLayout.SOUTH);
+        container.add(topPanel, BorderLayout.NORTH);
+    }
+
+    public JPanel menuPanel() {
         JMenuBar menuBar = new JMenuBar();
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BorderLayout());//***
@@ -56,8 +64,9 @@ public class Sweeper extends JFrame {
 
         menuPanel.add(menuBar);
 
-        container.add(menuPanel, BorderLayout.NORTH);
+        return menuPanel;
     }
+
 
     public void buildGamePanel() {
         JPanel gamePanel = new JPanel();
@@ -69,7 +78,19 @@ public class Sweeper extends JFrame {
                 gamePanel.add(sweepButton[i][j]);
             }
         }
-        container.add(gamePanel);
+        container.add(gamePanel, BorderLayout.CENTER);
+    }
+
+    public JPanel messagePanel() {
+        JPanel messagePanel = new JPanel();
+        JLabel timeLabel = new JLabel("游戏时间:" + Integer.toString(timeLength) + "秒");
+        JLabel resultLabel = new JLabel("   状态:游戏进行中");
+        JLabel minesCountLabel = new JLabel("   剩余地雷个数:" + minesCount);
+
+        messagePanel.add(timeLabel);
+        messagePanel.add(resultLabel);
+        messagePanel.add(minesCountLabel);
+        return messagePanel;
     }
 
     public static void main(String[] args) {
