@@ -75,6 +75,9 @@ public class Sweeper extends JFrame {
         for (int i = 1; i <= row; i++) {
             for (int j = 1; j <= col; j++) {
                 sweepButton[i][j] = new JButton();
+                sweepButton[i][j].setMargin(new Insets(0, 0, 0, 0));
+                sweepButton[i][j].setFont(new Font(null, Font.BOLD, 25));
+                sweepButton[i][j].setText("");
                 gamePanel.add(sweepButton[i][j]);
             }
         }
