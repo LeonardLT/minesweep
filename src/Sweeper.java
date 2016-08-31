@@ -306,6 +306,7 @@ public class Sweeper extends JFrame {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    timeNumber++;
                     timeLabel.setText("游戏时间:" + timeNumber + "秒");
                     messagePanel.add(timeLabel);
                 }
