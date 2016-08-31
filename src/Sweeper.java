@@ -12,6 +12,8 @@ public class Sweeper extends JFrame {
     private JButton[][] sweepButton;
     int[][] sweepButtonValues = new int[row + 2][col + 2];
     private boolean[][] buttonFlag = new boolean[row + 2][col + 2];
+    private JPanel messagePanel;
+    private JLabel timeLabel;
 
     public Sweeper() {
         container = getContentPane();
@@ -21,6 +23,7 @@ public class Sweeper extends JFrame {
     }
 
     public void initGame() {
+
         buildTopPanel();
         buildGamePanel();
         setMines(minesCount);
@@ -58,7 +61,7 @@ public class Sweeper extends JFrame {
 //        buttonFlag[i][j] = true;
 //        sweepButton[i][j].setBackground(Color.RED);
 //        if(sweepButton[i][j].getText() == ""){
-        if (sweepButton[i][j].getText() == "Q") {
+        if (sweepButton[i][j].getText() == "") {
             minesCount--;
             sweepButton[i][j].setText("★");
             if (sweepButtonValues[i][j] == 10) {
@@ -67,7 +70,7 @@ public class Sweeper extends JFrame {
             }
         } else if (sweepButton[i][j].getText() == "★") {
             minesCount++;
-            sweepButton[i][j].setText("Q");
+            sweepButton[i][j].setText("");
             if (sweepButtonValues[i][j] == 10) {
                 minesRealCount++;
                 System.out.println("++真实地雷数目:" + minesRealCount);
@@ -279,8 +282,9 @@ public class Sweeper extends JFrame {
     }
 
     public JPanel messagePanel() {
-        JPanel messagePanel = new JPanel();
-        JLabel timeLabel = new JLabel("游戏时间:" + Integer.toString(timeLength) + "秒");
+        messagePanel = new JPanel();
+        timeLabel = new JLabel("游戏时间:" + Integer.toString(timeLength) + "秒");
+        showTime();
         JLabel resultLabel = new JLabel("   状态:游戏进行中");
         JLabel minesCountLabel = new JLabel("   剩余地雷个数:" + minesCount);
 
@@ -288,6 +292,27 @@ public class Sweeper extends JFrame {
         messagePanel.add(resultLabel);
         messagePanel.add(minesCountLabel);
         return messagePanel;
+    }
+
+    public void showTime() {
+        Thread time = new Thread(new Runnable() {
+            int timeNumber = 0;
+
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.currentThread().sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    timeLabel.setText("游戏时间:" + timeNumber + "秒");
+                    messagePanel.add(timeLabel);
+                }
+            }
+        });
+        time.start();
+
     }
 
     public static void main(String[] args) {
