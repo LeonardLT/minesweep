@@ -11,6 +11,7 @@ public class Sweeper extends JFrame {
     private int minesCount = 10;
     private JButton[][] sweepButton;
     int[][] sweepButtonValues = new int[row + 2][col + 2];
+    private boolean[][] buttonFlag =new boolean[row+2][col+2];
 
     public Sweeper() {
         container = getContentPane();
@@ -84,12 +85,14 @@ public class Sweeper extends JFrame {
     public void markNumber(int i, int j) {
         sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
         sweepButton[i][j].setEnabled(false);
+//        buttonFlag[i][j] = true;
     }
 
     public void markMine(int i, int j) {
         sweepButton[i][j].setBackground(Color.RED);
         sweepButton[i][j].setText("X");
         sweepButton[i][j].setEnabled(false);
+//        buttonFlag[i][j] = true;
     }
 
     public void markZero(int i, int j) {
@@ -188,6 +191,7 @@ public class Sweeper extends JFrame {
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(row, col, 0, 0));
         sweepButton = new JButton[row + 2][col + 2];
+
         for (int i = 1; i <= row; i++) {
             for (int j = 1; j <= col; j++) {
                 sweepButton[i][j] = new JButton();
@@ -195,6 +199,7 @@ public class Sweeper extends JFrame {
                 sweepButton[i][j].setFont(new Font(null, Font.BOLD, 25));
                 sweepButton[i][j].setText("");
                 gamePanel.add(sweepButton[i][j]);
+                buttonFlag[i][j] = false;
             }
         }
         container.add(gamePanel, BorderLayout.CENTER);
