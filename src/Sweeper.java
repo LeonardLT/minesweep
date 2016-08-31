@@ -36,6 +36,24 @@ public class Sweeper extends JFrame {
         setResizable(false);
     }
 
+    public void gameOver() {
+        for (int i = 1; i <= row; i++) {
+            for (int j = 1; j <= col; j++) {
+                if (sweepButtonValues[i][j] == 0) {
+                    sweepButton[i][j].setText("");
+                } else if (sweepButtonValues[i][j] == 10) {
+                    sweepButton[i][j].setText("X");
+                } else {
+                    sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
+
+                }
+                sweepButton[i][j].setEnabled(false);
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Game over!");
+        new Sweeper();
+    }
+
     //计算周围地雷数
     public void setButtonValue() {
         for (int i = 1; i <= row; i++) {
@@ -56,7 +74,7 @@ public class Sweeper extends JFrame {
                         sweepButtonValues[i][j]++;
                     }
                     //显示数字
-                    sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
+//                    sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
                 }
             }
         }
@@ -91,12 +109,13 @@ public class Sweeper extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             for (int i = 1; i <= row; i++) {
-                for (int j = 0; j <= col; j++) {
+                for (int j = 1; j <= col; j++) {
                     if (e.getSource() == sweepButton[i][j]) {
                         if (sweepButtonValues[i][j] == 0) {
                             markZero(i, j);
                         } else if (sweepButtonValues[i][j] == 10) {
                             markMine(i, j);
+                            gameOver();
                         } else {
                             markNumber(i, j);
                         }
@@ -121,7 +140,7 @@ public class Sweeper extends JFrame {
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
             sweepButtonValues[x][y] = 10;
-            sweepButton[x][y].setText("Q");
+//            sweepButton[x][y].setText("Q");
 
         }
     }
@@ -165,7 +184,7 @@ public class Sweeper extends JFrame {
     }
 
 
-    public void buildGamePanel() {
+    public JPanel buildGamePanel() {
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(row, col, 0, 0));
         sweepButton = new JButton[row + 2][col + 2];
@@ -179,6 +198,7 @@ public class Sweeper extends JFrame {
             }
         }
         container.add(gamePanel, BorderLayout.CENTER);
+        return gamePanel;
     }
 
     public JPanel messagePanel() {
