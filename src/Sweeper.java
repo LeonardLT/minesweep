@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class Sweeper extends JFrame {
     private Container container;
@@ -35,6 +34,31 @@ public class Sweeper extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
+    }
+
+
+    class FindMineMouseListener extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            for (int i = 1; i <= row; i++) {
+                for (int j = 0; j <= row; j++) {
+                    if (e.getSource() == sweepButton[i][j] && e.getButton() == MouseEvent.BUTTON3) { //***
+                        findMine(i, j);
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    private void findMine(int i, int j) {
+        buttonFlag[i][j] = true;
+        sweepButton[i][j].setBackground(Color.RED);
+        sweepButton[i][j].setText("★");
+        minesCount--;
+        buildTopPanel();
     }
 
     public void gameOver() {
@@ -85,21 +109,18 @@ public class Sweeper extends JFrame {
     public void markNumber(int i, int j) {
         sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
         sweepButton[i][j].setEnabled(false);
-        buttonFlag[i][j] = true;
     }
 
     public void markMine(int i, int j) {
         sweepButton[i][j].setBackground(Color.RED);
         sweepButton[i][j].setText("X");
         sweepButton[i][j].setEnabled(false);
-        buttonFlag[i][j] = true;
     }
 
     public void markZero(int i, int j) {
-//        sweepButton[i][j].setText("");
-        System.out.println(i);
+//        sweepButton[i][j].setText(".");
         sweepButton[i][j].setEnabled(false);
-        if (buttonFlag[i][j]) {
+        if (buttonFlag[i][j] == true) {
             return;
         } else {
             buttonFlag[i][j] = true;
@@ -109,19 +130,20 @@ public class Sweeper extends JFrame {
             if (sweepButtonValues[i][j] == 0) {
                 sweepButton[i][j].setText("");
                 for (int s = i - 1; s >= 0 && s <= row && s <= i + 1; s++) {
-                    for (int t = j - 1; t >= 0 && t <= col && t <= j + 1; t++) {
+                    for (int t = j - 1; t >= 0 && t < col && t < j + 1; t++) {
                         markZero(s, t);
                     }
-
                 }
             }
         }
     }
 
+
     public void addListener() {
         for (int i = 1; i <= row; i++) {
             for (int j = 1; j <= col; j++) {
                 sweepButton[i][j].addActionListener(new ButtonActionListener());
+                sweepButton[i][j].addMouseListener(new FindMineMouseListener());
             }
         }
     }
@@ -210,14 +232,20 @@ public class Sweeper extends JFrame {
         gamePanel.setLayout(new GridLayout(row, col, 0, 0));
         sweepButton = new JButton[row + 2][col + 2];
 
-        for (int i = 1; i <= row; i++) {
-            for (int j = 1; j <= col; j++) {
+        for (int i = 0; i < row + 2; i++) {      //!!!!!!!!!!!!!!!!
+            for (int j = 0; j < col + 2; j++) {
                 sweepButton[i][j] = new JButton();
                 sweepButton[i][j].setMargin(new Insets(0, 0, 0, 0));
                 sweepButton[i][j].setFont(new Font(null, Font.BOLD, 25));
                 sweepButton[i][j].setText("");
-                gamePanel.add(sweepButton[i][j]);
+                sweepButtonValues[i][j] = 0;
                 buttonFlag[i][j] = false;
+            }
+        }
+        for (int i = 1; i <= row; i++) {        //!!!!!!!!!!!!!!!!
+            for (int j = 1; j <= col; j++) {
+                gamePanel.add(sweepButton[i][j]);
+
             }
         }
         container.add(gamePanel, BorderLayout.CENTER);
