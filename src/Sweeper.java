@@ -8,6 +8,7 @@ public class Sweeper extends JFrame {
     private int col = 9;
     private int timeLength = 0;
     private int minesCount = 10;
+    private int minesRealCount = 10;
     private JButton[][] sweepButton;
     int[][] sweepButtonValues = new int[row + 2][col + 2];
     private boolean[][] buttonFlag = new boolean[row + 2][col + 2];
@@ -54,11 +55,36 @@ public class Sweeper extends JFrame {
     }
 
     private void findMine(int i, int j) {
-        buttonFlag[i][j] = true;
-        sweepButton[i][j].setBackground(Color.RED);
-        sweepButton[i][j].setText("★");
-        minesCount--;
+//        buttonFlag[i][j] = true;
+//        sweepButton[i][j].setBackground(Color.RED);
+//        if(sweepButton[i][j].getText() == ""){
+        if (sweepButton[i][j].getText() == "Q") {
+            minesCount--;
+            sweepButton[i][j].setText("★");
+            if (sweepButtonValues[i][j] == 10) {
+                minesRealCount--;
+                System.out.println("--真实地雷数目:" + minesRealCount);
+            }
+        } else if (sweepButton[i][j].getText() == "★") {
+            minesCount++;
+            sweepButton[i][j].setText("Q");
+            if (sweepButtonValues[i][j] == 10) {
+                minesRealCount++;
+                System.out.println("++真实地雷数目:" + minesRealCount);
+            }
+        } else {
+            minesCount--;
+            sweepButton[i][j].setText("★");
+        }
         buildTopPanel();
+
+        isWinner();
+    }
+
+    public void isWinner() {
+        if (minesRealCount == 0 && minesCount == 0) {
+            JOptionPane.showMessageDialog(null, "--Win--");
+        }
     }
 
     public void gameOver() {
@@ -183,7 +209,7 @@ public class Sweeper extends JFrame {
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
             sweepButtonValues[x][y] = 10;
-//            sweepButton[x][y].setText("Q");
+            sweepButton[x][y].setText("Q");
 
         }
     }
