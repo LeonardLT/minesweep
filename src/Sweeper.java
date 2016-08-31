@@ -11,7 +11,7 @@ public class Sweeper extends JFrame {
     private int minesCount = 10;
     private JButton[][] sweepButton;
     int[][] sweepButtonValues = new int[row + 2][col + 2];
-    private boolean[][] buttonFlag =new boolean[row+2][col+2];
+    private boolean[][] buttonFlag = new boolean[row + 2][col + 2];
 
     public Sweeper() {
         container = getContentPane();
@@ -85,19 +85,37 @@ public class Sweeper extends JFrame {
     public void markNumber(int i, int j) {
         sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
         sweepButton[i][j].setEnabled(false);
-//        buttonFlag[i][j] = true;
+        buttonFlag[i][j] = true;
     }
 
     public void markMine(int i, int j) {
         sweepButton[i][j].setBackground(Color.RED);
         sweepButton[i][j].setText("X");
         sweepButton[i][j].setEnabled(false);
-//        buttonFlag[i][j] = true;
+        buttonFlag[i][j] = true;
     }
 
     public void markZero(int i, int j) {
-        sweepButton[i][j].setText("");
+//        sweepButton[i][j].setText("");
+        System.out.println(i);
         sweepButton[i][j].setEnabled(false);
+        if (buttonFlag[i][j]) {
+            return;
+        } else {
+            buttonFlag[i][j] = true;
+            if (sweepButtonValues[i][j] != 10 && sweepButtonValues[i][j] != 0) {
+                markNumber(i, j);
+            }
+            if (sweepButtonValues[i][j] == 0) {
+                sweepButton[i][j].setText("");
+                for (int s = i - 1; s >= 0 && s <= row && s <= i + 1; s++) {
+                    for (int t = j - 1; t >= 0 && t <= col && t <= j + 1; t++) {
+                        markZero(s, t);
+                    }
+
+                }
+            }
+        }
     }
 
     public void addListener() {
