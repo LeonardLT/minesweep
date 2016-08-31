@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
 
 public class Sweeper extends JFrame {
     private Container container;
@@ -10,10 +11,10 @@ public class Sweeper extends JFrame {
     private int minesCount = 10;
     private int minesRealCount = 10;
     private JButton[][] sweepButton;
-    int[][] sweepButtonValues = new int[row + 2][col + 2];
+    private int[][] sweepButtonValues = new int[row + 2][col + 2];
     private boolean[][] buttonFlag = new boolean[row + 2][col + 2];
     private JPanel messagePanel;
-    private JLabel timeLabel;
+    private JLabel timeLabel, minesCountLabel;
 
     public Sweeper() {
         container = getContentPane();
@@ -61,7 +62,9 @@ public class Sweeper extends JFrame {
 //        buttonFlag[i][j] = true;
 //        sweepButton[i][j].setBackground(Color.RED);
 //        if(sweepButton[i][j].getText() == ""){
-        if (sweepButton[i][j].getText() == "") {
+        if (!sweepButton[i][j].isEnabled()) {
+            return;
+        } else if (sweepButton[i][j].getText() == "") {
             minesCount--;
             sweepButton[i][j].setText("★");
             if (sweepButtonValues[i][j] == 10) {
@@ -75,17 +78,17 @@ public class Sweeper extends JFrame {
                 minesRealCount++;
                 System.out.println("++真实地雷数目:" + minesRealCount);
             }
-        } else {
-            minesCount--;
-            sweepButton[i][j].setText("★");
         }
-        buildTopPanel();
-
+//        else {
+//            minesCount--;
+//            sweepButton[i][j].setText("★");
+//        }
+        minesCountLabel.setText("   剩余地雷个数:" + minesCount);
         isWinner();
     }
 
     public void isWinner() {
-        if (minesRealCount == 0 && minesCount == 0) {
+        if (minesRealCount == 0) {
             JOptionPane.showMessageDialog(null, "--Win--");
         }
     }
@@ -183,7 +186,20 @@ public class Sweeper extends JFrame {
             for (int i = 1; i <= row; i++) {
                 for (int j = 1; j <= col; j++) {
                     if (e.getSource() == sweepButton[i][j]) {
-                        if (sweepButtonValues[i][j] == 0) {
+//                        if (sweepButtonValues[i][j] == 0&& !(sweepButton[i][j].getText() =="★")) {
+//                            markZero(i, j);
+//                        } else if (sweepButtonValues[i][j] == 10&&!(sweepButton[i][j].getText() =="★")) {
+//                            markMine(i, j);
+//                            gameOver();
+//                        }else if(Objects.equals(sweepButton[i][j].getText(), "★")){
+//                            return;
+//                        }
+//                        else {
+//                            markNumber(i, j);
+//                        }
+                        if (Objects.equals(sweepButton[i][j].getText(), "★")) {
+                            return;
+                        } else if (sweepButtonValues[i][j] == 0) {
                             markZero(i, j);
                         } else if (sweepButtonValues[i][j] == 10) {
                             markMine(i, j);
@@ -212,7 +228,7 @@ public class Sweeper extends JFrame {
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
             sweepButtonValues[x][y] = 10;
-            sweepButton[x][y].setText("Q");
+            sweepButton[x][y].setText("");
 
         }
     }
@@ -283,10 +299,11 @@ public class Sweeper extends JFrame {
 
     public JPanel messagePanel() {
         messagePanel = new JPanel();
-        timeLabel = new JLabel("游戏时间:" + Integer.toString(timeLength) + "秒");
+//        timeLabel = new JLabel("游戏时间:" + Integer.toString(timeLength) + "秒");
+        timeLabel = new JLabel("游戏时间:" + 0 + "秒");
         showTime();
         JLabel resultLabel = new JLabel("   状态:游戏进行中");
-        JLabel minesCountLabel = new JLabel("   剩余地雷个数:" + minesCount);
+        minesCountLabel = new JLabel("   剩余地雷个数:" + minesCount);
 
         messagePanel.add(timeLabel);
         messagePanel.add(resultLabel);
