@@ -7,15 +7,22 @@ public class Sweeper extends JFrame {
     private Container container;
     private int row;
     private int col;
-    private int minesCount;
-    private int minesRealCount;
-    private int level = 0;
+    private int minesCount;//Panel上显示的未消除雷数
+    private int minesRealCount;//真实未消除的雷数，
+    private int mines;//雷的数目
+    private int level;//关卡
     private JButton[][] sweepButton;
     private int[][] sweepButtonValues;
     private boolean[][] buttonFlag;
     private JPanel messagePanel;
     private JLabel timeLabel, minesCountLabel;
-    private JMenuItem jmi1, jmi2, jmi3, jmi4, exit;
+    private JMenuItem level1, level2, level3, again, exit;
+
+
+    public Sweeper(int level) {
+        chooseLevel(level);
+        initGame(level);
+    }
 
     public int getLevel() {//获得当前level
         return level;
@@ -25,37 +32,31 @@ public class Sweeper extends JFrame {
         this.level = level;
     }
 
-    public Sweeper() {
-        row = 9;
-        col = 9;
-        minesCount = 10;
-        minesRealCount = 10;
-        setLevel(1);//保存当前关卡
-        initGame(1);
-    }
-
-    public Sweeper(int level) {
+    private void chooseLevel(int level) {
         if (level == 1) {
             row = 9;
             col = 9;
+            mines = 10;
             minesCount = 10;
             minesRealCount = 10;
             setLevel(1);
         } else if (level == 2) {
             row = 18;
             col = 18;
+            mines = 20;
             minesCount = 20;
             minesRealCount = 20;
             setLevel(2);
         } else if (level == 3) {
             row = 27;
             col = 27;
+            mines = 30;
             minesCount = 30;
             minesRealCount = 30;
             setLevel(3);
         }
-        initGame(level);
     }
+
 
     public void initGame(int level) {
         container = getContentPane();
@@ -84,19 +85,19 @@ public class Sweeper extends JFrame {
         menuPanel.setLayout(new BorderLayout());//***
 
         JMenu gameSetting = new JMenu("游戏设置");
-        jmi1 = new JMenuItem("初级游戏");
-        jmi2 = new JMenuItem("中级游戏");
-        jmi3 = new JMenuItem("高级游戏");
-        jmi4 = new JMenuItem("再来一局");
+        level1 = new JMenuItem("初级游戏");
+        level2 = new JMenuItem("中级游戏");
+        level3 = new JMenuItem("高级游戏");
+        again = new JMenuItem("再来一局");
 
         JMenu gameHelp = new JMenu("帮助");
         JMenuItem help = new JMenuItem("帮助");
         exit = new JMenuItem("退出");
 
-        gameSetting.add(jmi1);
-        gameSetting.add(jmi2);
-        gameSetting.add(jmi3);
-        gameSetting.add(jmi4);
+        gameSetting.add(level1);
+        gameSetting.add(level2);
+        gameSetting.add(level3);
+        gameSetting.add(again);
         gameHelp.add(help);
         gameHelp.add(exit);
 
@@ -186,7 +187,7 @@ public class Sweeper extends JFrame {
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
             sweepButtonValues[x][y] = 10;
-//            sweepButton[x][y].setText("Q");
+            sweepButton[x][y].setText("Q");
 
         }
     }
@@ -233,12 +234,9 @@ public class Sweeper extends JFrame {
 
 
     private void findMine(int i, int j) {
-//        buttonFlag[i][j] = true;
-//        sweepButton[i][j].setBackground(Color.RED);
-//        if(sweepButton[i][j].getText() == ""){
         if (!sweepButton[i][j].isEnabled()) {
             return;
-        } else if (sweepButton[i][j].getText() == "") {
+        } else if (sweepButton[i][j].getText() == "Q") {
             minesCount--;
             sweepButton[i][j].setText("★");
             if (sweepButtonValues[i][j] == 10) {
@@ -247,7 +245,7 @@ public class Sweeper extends JFrame {
             }
         } else if (sweepButton[i][j].getText() == "★") {
             minesCount++;
-            sweepButton[i][j].setText("");
+            sweepButton[i][j].setText("Q");
             if (sweepButtonValues[i][j] == 10) {
                 minesRealCount++;
                 System.out.println("++真实地雷数目:" + minesRealCount);
@@ -266,8 +264,9 @@ public class Sweeper extends JFrame {
                 }
             }
         }
-        System.out.println("AAAA" + count);
-        if (minesRealCount == 0 || count == minesCount) {//判断输赢的方式1:标记十个雷。2.剩余10个雷没有点击
+        System.out.println("剩余" + count + "未点击");
+        System.out.println("mines" + mines + "");
+        if (minesRealCount == 0 || count == mines) {//判断输赢的方式1:标记十个雷。2.剩余10个雷没有点击
             JOptionPane.showMessageDialog(null, "--Win--");
         }
     }
@@ -328,10 +327,10 @@ public class Sweeper extends JFrame {
 
 
     public void addListener() {
-        jmi1.addActionListener(new MenuListener());
-        jmi2.addActionListener(new MenuListener());
-        jmi3.addActionListener(new MenuListener());
-        jmi4.addActionListener(new MenuListener());
+        level1.addActionListener(new MenuListener());
+        level2.addActionListener(new MenuListener());
+        level3.addActionListener(new MenuListener());
+        again.addActionListener(new MenuListener());
         exit.addActionListener(new ExitListener());
         for (int i = 1; i <= row; i++) {
             for (int j = 1; j <= col; j++) {
@@ -384,19 +383,19 @@ public class Sweeper extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             dispose();
-            if (e.getSource() == jmi1) {
+            if (e.getSource() == level1) {
                 System.out.println("1");
                 setLevel(1);
                 new Sweeper(1);
-            } else if (e.getSource() == jmi2) {
+            } else if (e.getSource() == level2) {
                 System.out.println("2");
                 setLevel(2);
                 new Sweeper(2);
-            } else if (e.getSource() == jmi3) {
+            } else if (e.getSource() == level3) {
                 new Sweeper(3);
                 setLevel(3);
                 System.out.println("3");
-            } else if (e.getSource() == jmi4) {
+            } else if (e.getSource() == again) {
                 System.out.println("4");
                 System.out.println(getLevel());
                 new Sweeper(getLevel());//当前关卡从新开始
