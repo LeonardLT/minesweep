@@ -14,7 +14,7 @@ public class Sweeper extends JFrame {
     private JButton[][] sweepButton;
     //    private int[][] sweepButtonValues = new int[row + 2][col + 2];
     private int[][] sweepButtonValues;
-    private int sweepButtonCount;
+    private int Count;
     private boolean[][] buttonFlag;
     private JPanel messagePanel;
     private JLabel timeLabel, minesCountLabel;
@@ -23,7 +23,6 @@ public class Sweeper extends JFrame {
     public Sweeper() {
         row = 9;
         col = 9;
-        sweepButtonCount = 81;
         initGame(1);
     }
 
@@ -31,12 +30,10 @@ public class Sweeper extends JFrame {
         if (level == 1) {
             row = 9;
             col = 9;
-            sweepButtonCount = 81;
             minesCount = 10;
         } else if (level == 2) {
             row = 18;
             col = 18;
-            sweepButtonCount = 18 * 18;
             minesCount = 20;
         } else if (level == 3) {
             row = 27;
@@ -246,8 +243,16 @@ public class Sweeper extends JFrame {
     }
 
     public void isWinner() {
-        System.out.println(sweepButtonCount + "==");
-        if (minesRealCount == 0 || sweepButtonCount == 0) {
+        int mines = row * col;//
+        for (int i = 1; i <= row; i++) {
+            for (int j = 1; j <= col; j++) {
+                if (sweepButton[i][j].isEnabled() == false) {
+                    mines--;//判断最后剩下的是不是都是雷
+                }
+            }
+        }
+        System.out.println("AAAA" + mines);
+        if (minesRealCount == 0 || mines == minesCount) {
             JOptionPane.showMessageDialog(null, "--Win--");
         }
     }
@@ -273,8 +278,6 @@ public class Sweeper extends JFrame {
 
     //显示雷或者数字
     public void markNumber(int i, int j) {
-        sweepButtonCount--;
-        System.out.println(sweepButtonCount);
 
         sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
         sweepButton[i][j].setEnabled(false);
@@ -296,14 +299,11 @@ public class Sweeper extends JFrame {
             } else {
                 buttonFlag[i][j] = true;
                 if (sweepButtonValues[i][j] != 10 && sweepButtonValues[i][j] != 0) {
-                    sweepButtonCount++;
                     System.out.println("..........");
                     markNumber(i, j);
                 }
                 if (sweepButtonValues[i][j] == 0) {
                     sweepButton[i][j].setText("");
-                    sweepButtonCount--;
-                    System.out.println(sweepButtonCount + "----");
                     for (int s = i - 1; s >= 0 && s <= row && s <= i + 1; s++) {
                         for (int t = j - 1; t >= 0 && t <= col && t <= j + 1; t++) {
                             markZero(s, t);
@@ -346,6 +346,7 @@ public class Sweeper extends JFrame {
                             markNumber(i, j);
                         }
                     }
+
                 }
             }
             isWinner();
