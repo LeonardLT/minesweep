@@ -5,33 +5,32 @@ import java.util.Objects;
 
 public class Sweeper extends JFrame {
     private Container container;
-    //        private int row = 9;
-//    private int col = 9;
     private int row;
     private int col;
-    private int minesCount = 10;
-    private int minesRealCount = 10;
+    private int minesCount;
+    private int minesRealCount;
     private int level = 0;
     private JButton[][] sweepButton;
-    //    private int[][] sweepButtonValues = new int[row + 2][col + 2];
     private int[][] sweepButtonValues;
-    private int Count;
     private boolean[][] buttonFlag;
     private JPanel messagePanel;
     private JLabel timeLabel, minesCountLabel;
     private JMenuItem jmi1, jmi2, jmi3, jmi4, exit;
 
-    public int getLevel() {
+    public int getLevel() {//获得当前level
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(int level) {//保存当前关卡
         this.level = level;
     }
 
     public Sweeper() {
         row = 9;
         col = 9;
+        minesCount = 10;
+        minesRealCount = 10;
+        setLevel(1);//保存当前关卡
         initGame(1);
     }
 
@@ -40,16 +39,19 @@ public class Sweeper extends JFrame {
             row = 9;
             col = 9;
             minesCount = 10;
+            minesRealCount = 10;
             setLevel(1);
         } else if (level == 2) {
             row = 18;
             col = 18;
             minesCount = 20;
+            minesRealCount = 20;
             setLevel(2);
         } else if (level == 3) {
             row = 27;
             col = 27;
             minesCount = 30;
+            minesRealCount = 30;
             setLevel(3);
         }
         initGame(level);
@@ -58,19 +60,21 @@ public class Sweeper extends JFrame {
     public void initGame(int level) {
         container = getContentPane();
         container.setLayout(new BorderLayout());
-        buildTopPanel();
-        buildGamePanel();
-        setMines(minesCount);
-        setButtonValue();
-        addListener();
-        buildMainFrame(level);
+        buildTopPanel();//建立上部Panel,menu and time
+        buildGamePanel();//建立游戏核心Panel
+        setMines(minesCount);//设雷
+        setButtonValue();//计算周围地雷数
+        addListener();// 添加监听事件
+        buildMainFrame(level);//绘制窗口
     }
 
     public void buildTopPanel() {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
+
         topPanel.add(menuPanel(), BorderLayout.NORTH);
         topPanel.add(messagePanel(), BorderLayout.SOUTH);
+
         container.add(topPanel, BorderLayout.NORTH);
     }
 
@@ -106,7 +110,6 @@ public class Sweeper extends JFrame {
 
     public JPanel messagePanel() {
         messagePanel = new JPanel();
-//        timeLabel = new JLabel("游戏时间:" + Integer.toString(timeLength) + "秒");
         timeLabel = new JLabel("游戏时间:" + 0 + "秒");
         showTime();
         JLabel resultLabel = new JLabel("   状态:游戏进行中");
@@ -183,7 +186,7 @@ public class Sweeper extends JFrame {
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
             sweepButtonValues[x][y] = 10;
-            sweepButton[x][y].setText("Q");
+//            sweepButton[x][y].setText("Q");
 
         }
     }
@@ -219,7 +222,7 @@ public class Sweeper extends JFrame {
         if (level == 1) {
             setBounds(500, 150, 500, 500);
         } else if (level == 2) {
-            setBounds(600, 150, 500, 500);
+            setBounds(650, 150, 550, 550);
         } else if (level == 3) {
             setBounds(900, 150, 900, 900);
         }
@@ -235,7 +238,7 @@ public class Sweeper extends JFrame {
 //        if(sweepButton[i][j].getText() == ""){
         if (!sweepButton[i][j].isEnabled()) {
             return;
-        } else if (sweepButton[i][j].getText() == "Q") {
+        } else if (sweepButton[i][j].getText() == "") {
             minesCount--;
             sweepButton[i][j].setText("★");
             if (sweepButtonValues[i][j] == 10) {
@@ -244,7 +247,7 @@ public class Sweeper extends JFrame {
             }
         } else if (sweepButton[i][j].getText() == "★") {
             minesCount++;
-            sweepButton[i][j].setText("Q");
+            sweepButton[i][j].setText("");
             if (sweepButtonValues[i][j] == 10) {
                 minesRealCount++;
                 System.out.println("++真实地雷数目:" + minesRealCount);
@@ -255,16 +258,16 @@ public class Sweeper extends JFrame {
     }
 
     public void isWinner() {
-        int mines = row * col;//
+        int count = row * col;//存在与Panel没有被点击的button
         for (int i = 1; i <= row; i++) {
             for (int j = 1; j <= col; j++) {
                 if (sweepButton[i][j].isEnabled() == false) {
-                    mines--;//判断最后剩下的是不是都是雷
+                    count--;//判断最后剩下的是不是都是雷
                 }
             }
         }
-        System.out.println("AAAA" + mines);
-        if (minesRealCount == 0 || mines == minesCount) {
+        System.out.println("AAAA" + count);
+        if (minesRealCount == 0 || count == minesCount) {//判断输赢的方式1:标记十个雷。2.剩余10个雷没有点击
             JOptionPane.showMessageDialog(null, "--Win--");
         }
     }
@@ -284,13 +287,13 @@ public class Sweeper extends JFrame {
             }
         }
         JOptionPane.showMessageDialog(null, "Game over!");
-        new Sweeper();
+        dispose();
+        new Sweeper(getLevel());
     }
 
 
     //显示雷或者数字
     public void markNumber(int i, int j) {
-
         sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
         sweepButton[i][j].setEnabled(false);
     }
@@ -303,8 +306,6 @@ public class Sweeper extends JFrame {
 
     public void markZero(int i, int j) {
         if (sweepButton[i][j].getText() != "★") {
-
-
             sweepButton[i][j].setEnabled(false);
             if (buttonFlag[i][j] == true && sweepButton[i][j].getText() != "★") {
                 return;
@@ -379,6 +380,7 @@ public class Sweeper extends JFrame {
     }
 
     private class MenuListener implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             dispose();
@@ -397,13 +399,12 @@ public class Sweeper extends JFrame {
             } else if (e.getSource() == jmi4) {
                 System.out.println("4");
                 System.out.println(getLevel());
-                new Sweeper(getLevel());
+                new Sweeper(getLevel());//当前关卡从新开始
             }
         }
     }
 
     private class ExitListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == exit) {
@@ -414,7 +415,7 @@ public class Sweeper extends JFrame {
 
 
     public static void main(String[] args) {
-        new Sweeper();
+        new Sweeper(1);
     }
 
 }
