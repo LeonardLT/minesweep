@@ -5,31 +5,53 @@ import java.util.Objects;
 
 public class Sweeper extends JFrame {
     private Container container;
-    private int row = 9;
-    private int col = 9;
-    //    private int timeLength = 0;
+    //        private int row = 9;
+//    private int col = 9;
+    private int row;
+    private int col;
     private int minesCount = 10;
     private int minesRealCount = 10;
     private JButton[][] sweepButton;
-    private int[][] sweepButtonValues = new int[row + 2][col + 2];
-    private boolean[][] buttonFlag = new boolean[row + 2][col + 2];
+    //    private int[][] sweepButtonValues = new int[row + 2][col + 2];
+    private int[][] sweepButtonValues;
+    private boolean[][] buttonFlag;
     private JPanel messagePanel;
     private JLabel timeLabel, minesCountLabel;
+    private JMenuItem jmi1, jmi2, jmi3, jmi4, exit;
 
     public Sweeper() {
-        container = getContentPane();
-        container.setLayout(new BorderLayout());
+        row = 9;
+        col = 9;
 
-        initGame();
+        initGame(1);
     }
 
-    public void initGame() {
+    public Sweeper(int level) {
+        if (level == 1) {
+            row = 9;
+            col = 9;
+            minesCount = 10;
+        } else if (level == 2) {
+            row = 18;
+            col = 18;
+            minesCount = 20;
+        } else if (level == 3) {
+            row = 27;
+            col = 27;
+            minesCount = 30;
+        }
+        initGame(level);
+    }
+
+    public void initGame(int level) {
+        container = getContentPane();
+        container.setLayout(new BorderLayout());
         buildTopPanel();
         buildGamePanel();
         setMines(minesCount);
         setButtonValue();
         addListener();
-        buildMainFrame();
+        buildMainFrame(level);
     }
 
     public void buildTopPanel() {
@@ -46,14 +68,14 @@ public class Sweeper extends JFrame {
         menuPanel.setLayout(new BorderLayout());//***
 
         JMenu gameSetting = new JMenu("游戏设置");
-        JMenuItem jmi1 = new JMenuItem("初级游戏");
-        JMenuItem jmi2 = new JMenuItem("中级游戏");
-        JMenuItem jmi3 = new JMenuItem("高级游戏");
-        JMenuItem jmi4 = new JMenuItem("再来一局");
+        jmi1 = new JMenuItem("初级游戏");
+        jmi2 = new JMenuItem("中级游戏");
+        jmi3 = new JMenuItem("高级游戏");
+        jmi4 = new JMenuItem("再来一局");
 
         JMenu gameHelp = new JMenu("帮助");
         JMenuItem help = new JMenuItem("帮助");
-        JMenuItem exit = new JMenuItem("退出");
+        exit = new JMenuItem("退出");
 
         gameSetting.add(jmi1);
         gameSetting.add(jmi2);
@@ -110,6 +132,9 @@ public class Sweeper extends JFrame {
         JPanel gamePanel = new JPanel();
         gamePanel.setLayout(new GridLayout(row, col, 0, 0));
         sweepButton = new JButton[row + 2][col + 2];
+        sweepButtonValues = new int[row + 2][col + 2];
+        buttonFlag = new boolean[row + 2][col + 2];
+
 
         for (int i = 0; i < row + 2; i++) {      //!!!!!!!!!!!!!!!!
             for (int j = 0; j < col + 2; j++) {
@@ -177,30 +202,20 @@ public class Sweeper extends JFrame {
         }
     }
 
-    public void buildMainFrame() {
+    public void buildMainFrame(int level) {
         setTitle("扫雷游戏");
-        setBounds(500, 150, 500, 500);
+        if (level == 1) {
+            setBounds(500, 150, 500, 500);
+        } else if (level == 2) {
+            setBounds(600, 150, 500, 500);
+        } else if (level == 3) {
+            setBounds(800, 150, 600, 600);
+        }
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
     }
 
-
-    class FindMineMouseListener extends MouseAdapter {
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            for (int i = 1; i <= row; i++) {
-                for (int j = 1; j <= col; j++) {
-                    if (e.getSource() == sweepButton[i][j] && e.getButton() == MouseEvent.BUTTON3) { //***
-                        findMine(i, j);
-                    }
-                }
-            }
-        }
-
-
-    }
 
     private void findMine(int i, int j) {
 //        buttonFlag[i][j] = true;
@@ -276,7 +291,7 @@ public class Sweeper extends JFrame {
                 }
                 if (sweepButtonValues[i][j] == 0) {
                     sweepButton[i][j].setText("");
-                    for (int s = i - 1; s >= 0 && s <= row && s <= i + 1 ; s++) {
+                    for (int s = i - 1; s >= 0 && s <= row && s <= i + 1; s++) {
                         for (int t = j - 1; t >= 0 && t <= col && t <= j + 1; t++) {
                             markZero(s, t);
                         }
@@ -288,6 +303,11 @@ public class Sweeper extends JFrame {
 
 
     public void addListener() {
+        jmi1.addActionListener(new MenuListener());
+        jmi2.addActionListener(new MenuListener());
+        jmi3.addActionListener(new MenuListener());
+        jmi4.addActionListener(new MenuListener());
+        exit.addActionListener(new ExitListener());
         for (int i = 1; i <= row; i++) {
             for (int j = 1; j <= col; j++) {
                 sweepButton[i][j].addActionListener(new ButtonActionListener());
@@ -314,6 +334,50 @@ public class Sweeper extends JFrame {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private class FindMineMouseListener extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            for (int i = 1; i <= row; i++) {
+                for (int j = 1; j <= col; j++) {
+                    if (e.getSource() == sweepButton[i][j] && e.getButton() == MouseEvent.BUTTON3) { //***
+                        findMine(i, j);
+                    }
+                }
+            }
+        }
+    }
+
+    private class MenuListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            dispose();
+            if (e.getSource() == jmi1) {
+                System.out.println("1");
+                new Sweeper(1);
+            } else if (e.getSource() == jmi2) {
+                System.out.println("2");
+                new Sweeper(2);
+            } else if (e.getSource() == jmi3) {
+                new Sweeper(3);
+                System.out.println("3");
+            } else if (e.getSource() == jmi4) {
+                System.out.println("4");
+                new Sweeper();
+            }
+        }
+    }
+
+    private class ExitListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource()==exit) {
+                System.exit(0);
             }
         }
     }
