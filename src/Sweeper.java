@@ -11,6 +11,7 @@ public class Sweeper extends JFrame {
     private int col;
     private int minesCount = 10;
     private int minesRealCount = 10;
+    private int level = 0;
     private JButton[][] sweepButton;
     //    private int[][] sweepButtonValues = new int[row + 2][col + 2];
     private int[][] sweepButtonValues;
@@ -19,6 +20,14 @@ public class Sweeper extends JFrame {
     private JPanel messagePanel;
     private JLabel timeLabel, minesCountLabel;
     private JMenuItem jmi1, jmi2, jmi3, jmi4, exit;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public Sweeper() {
         row = 9;
@@ -31,14 +40,17 @@ public class Sweeper extends JFrame {
             row = 9;
             col = 9;
             minesCount = 10;
+            setLevel(1);
         } else if (level == 2) {
             row = 18;
             col = 18;
             minesCount = 20;
+            setLevel(2);
         } else if (level == 3) {
             row = 27;
             col = 27;
             minesCount = 30;
+            setLevel(3);
         }
         initGame(level);
     }
@@ -209,7 +221,7 @@ public class Sweeper extends JFrame {
         } else if (level == 2) {
             setBounds(600, 150, 500, 500);
         } else if (level == 3) {
-            setBounds(800, 150, 600, 600);
+            setBounds(900, 150, 900, 900);
         }
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
@@ -299,7 +311,6 @@ public class Sweeper extends JFrame {
             } else {
                 buttonFlag[i][j] = true;
                 if (sweepButtonValues[i][j] != 10 && sweepButtonValues[i][j] != 0) {
-                    System.out.println("..........");
                     markNumber(i, j);
                 }
                 if (sweepButtonValues[i][j] == 0) {
@@ -373,16 +384,20 @@ public class Sweeper extends JFrame {
             dispose();
             if (e.getSource() == jmi1) {
                 System.out.println("1");
+                setLevel(1);
                 new Sweeper(1);
             } else if (e.getSource() == jmi2) {
                 System.out.println("2");
+                setLevel(2);
                 new Sweeper(2);
             } else if (e.getSource() == jmi3) {
                 new Sweeper(3);
+                setLevel(3);
                 System.out.println("3");
             } else if (e.getSource() == jmi4) {
                 System.out.println("4");
-                new Sweeper();
+                System.out.println(getLevel());
+                new Sweeper(getLevel());
             }
         }
     }
