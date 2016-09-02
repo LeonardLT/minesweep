@@ -14,6 +14,7 @@ public class Sweeper extends JFrame {
     private JButton[][] sweepButton;
     //    private int[][] sweepButtonValues = new int[row + 2][col + 2];
     private int[][] sweepButtonValues;
+    private int sweepButtonCount;
     private boolean[][] buttonFlag;
     private JPanel messagePanel;
     private JLabel timeLabel, minesCountLabel;
@@ -22,7 +23,7 @@ public class Sweeper extends JFrame {
     public Sweeper() {
         row = 9;
         col = 9;
-
+        sweepButtonCount = 81;
         initGame(1);
     }
 
@@ -30,10 +31,12 @@ public class Sweeper extends JFrame {
         if (level == 1) {
             row = 9;
             col = 9;
+            sweepButtonCount = 81;
             minesCount = 10;
         } else if (level == 2) {
             row = 18;
             col = 18;
+            sweepButtonCount = 18 * 18;
             minesCount = 20;
         } else if (level == 3) {
             row = 27;
@@ -171,7 +174,7 @@ public class Sweeper extends JFrame {
             int x = randomValues[i] / col + 1;
             int y = randomValues[i] % col + 1;
             sweepButtonValues[x][y] = 10;
-            sweepButton[x][y].setText("");
+            sweepButton[x][y].setText("Q");
 
         }
     }
@@ -223,7 +226,7 @@ public class Sweeper extends JFrame {
 //        if(sweepButton[i][j].getText() == ""){
         if (!sweepButton[i][j].isEnabled()) {
             return;
-        } else if (sweepButton[i][j].getText() == "") {
+        } else if (sweepButton[i][j].getText() == "Q") {
             minesCount--;
             sweepButton[i][j].setText("★");
             if (sweepButtonValues[i][j] == 10) {
@@ -232,7 +235,7 @@ public class Sweeper extends JFrame {
             }
         } else if (sweepButton[i][j].getText() == "★") {
             minesCount++;
-            sweepButton[i][j].setText("");
+            sweepButton[i][j].setText("Q");
             if (sweepButtonValues[i][j] == 10) {
                 minesRealCount++;
                 System.out.println("++真实地雷数目:" + minesRealCount);
@@ -243,7 +246,8 @@ public class Sweeper extends JFrame {
     }
 
     public void isWinner() {
-        if (minesRealCount == 0) {
+        System.out.println(sweepButtonCount + "==");
+        if (minesRealCount == 0 || sweepButtonCount == 0) {
             JOptionPane.showMessageDialog(null, "--Win--");
         }
     }
@@ -269,6 +273,9 @@ public class Sweeper extends JFrame {
 
     //显示雷或者数字
     public void markNumber(int i, int j) {
+        sweepButtonCount--;
+        System.out.println(sweepButtonCount);
+
         sweepButton[i][j].setText(Integer.toString(sweepButtonValues[i][j]));
         sweepButton[i][j].setEnabled(false);
     }
@@ -281,16 +288,22 @@ public class Sweeper extends JFrame {
 
     public void markZero(int i, int j) {
         if (sweepButton[i][j].getText() != "★") {
+
+
             sweepButton[i][j].setEnabled(false);
             if (buttonFlag[i][j] == true && sweepButton[i][j].getText() != "★") {
                 return;
             } else {
                 buttonFlag[i][j] = true;
                 if (sweepButtonValues[i][j] != 10 && sweepButtonValues[i][j] != 0) {
+                    sweepButtonCount++;
+                    System.out.println("..........");
                     markNumber(i, j);
                 }
                 if (sweepButtonValues[i][j] == 0) {
                     sweepButton[i][j].setText("");
+                    sweepButtonCount--;
+                    System.out.println(sweepButtonCount + "----");
                     for (int s = i - 1; s >= 0 && s <= row && s <= i + 1; s++) {
                         for (int t = j - 1; t >= 0 && t <= col && t <= j + 1; t++) {
                             markZero(s, t);
@@ -335,6 +348,7 @@ public class Sweeper extends JFrame {
                     }
                 }
             }
+            isWinner();
         }
     }
 
@@ -372,11 +386,11 @@ public class Sweeper extends JFrame {
         }
     }
 
-    private class ExitListener implements ActionListener{
+    private class ExitListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource()==exit) {
+            if (e.getSource() == exit) {
                 System.exit(0);
             }
         }
